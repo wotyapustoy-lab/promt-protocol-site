@@ -1,0 +1,67 @@
+Ñòðóêòóðà ïàïîê
+Ñåðèéíûé íîìåð òîìà: 7A72-F8EC
+C:.
+¦   index.html
+¦   script.ts
+¦   structure.txt
+¦   style.css
+¦   tsconfig.json
+¦   types.d.ts
+¦   
+L---Application
+    ¦   Application.ts
+    ¦   Renderer.ts
+    ¦   sources.ts
+    ¦   
+    +---Audio
+    ¦       AudioManager.ts
+    ¦       AudioSources.ts
+    ¦       
+    +---Camera
+    ¦       Camera.ts
+    ¦       CameraKeyframes.ts
+    ¦       
+    +---Shaders
+    ¦   +---coffee
+    ¦   ¦       fragment.glsl
+    ¦   ¦       vertex.glsl
+    ¦   ¦       
+    ¦   L---screen
+    ¦           fragment.glsl
+    ¦           vertex.glsl
+    ¦           
+    +---UI
+    ¦   ¦   Animation.ts
+    ¦   ¦   App.tsx
+    ¦   ¦   EventBus.ts
+    ¦   ¦   index.ts
+    ¦   ¦   style.css
+    ¦   ¦   
+    ¦   L---components
+    ¦           FreeCamToggle.tsx
+    ¦           HelpPrompt.tsx
+    ¦           InfoOverlay.tsx
+    ¦           InterfaceUI.tsx
+    ¦           LoadingScreen.tsx
+    ¦           MuteToggle.tsx
+    ¦           
+    +---Utils
+    ¦       BakedModel.ts
+    ¦       Debug.ts
+    ¦       EventEmitter.ts
+    ¦       Loading.ts
+    ¦       Mouse.ts
+    ¦       Resources.ts
+    ¦       Sizes.ts
+    ¦       Time.ts
+    ¦       
+    L---World
+            CoffeeSteam.ts
+            Computer.ts
+            Cursor.ts
+            Decor.ts
+            Environment.ts
+            Hitboxes.ts
+            MonitorScreen.ts
+            World.ts
+            

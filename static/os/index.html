@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom OS Scene</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at center, #4e006e, #000);
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Consolas', monospace;
+      color: #0ff;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      width: 200%; height: 200%;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,0,255,0.2), transparent 70%),
+        radial-gradient(circle at 70% 70%, rgba(0,255,255,0.2), transparent 70%);
+      animation: bgMove 20s linear infinite;
+      opacity: 0.5; z-index: 0;
+      transition: opacity 2s ease;
+    }
+    @keyframes bgMove {
+      0% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(-10%,-5%) scale(1.1); }
+      100% { transform: translate(0,0) scale(1); }
+    }
+
+    .monitor {
+      position: relative;
+      width: 90vw; height: 90vh;
+      border: 3px solid rgba(0,255,255,0.4);
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(0,255,255,0.25);
+      overflow: hidden;
+      z-index: 1;
+      background: #000;
+      opacity: 0;
+      transform: scale(0.97);
+      animation: powerOn 2.5s ease forwards;
+    }
+
+    @keyframes powerOn {
+      0% { opacity: 0; transform: scale(0.97); filter: brightness(0.2); }
+      50% { opacity: 0.7; transform: scale(1.02); filter: brightness(1.2); }
+      100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+    }
+
+    /* === ДОК === */
+    .dock {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 40px;
+      z-index: 2;
+      opacity: 0;
+      animation: fadeDock 2s ease 2.5s forwards;
+    }
+    @keyframes fadeDock {
+      from { opacity: 0; transform: translate(-50%, 20px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    .icon {
+      display: flex; flex-direction: column; align-items: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, filter 0.3s ease;
+    }
+    .icon img {
+      width: 80px; height: 80px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,255,255,0.3);
+    }
+    .icon:hover { transform: scale(1.15); filter: drop-shadow(0 0 15px #0ff); }
+    .icon span { margin-top: 8px; font-size: 14px; color: #aefcff; }
+
+    /* === ОБЩИЕ МОДАЛЬНЫЕ ОКНА === */
+    .modal {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+      z-index: 5;
+    }
+
+    .modal.active { opacity: 1; visibility: visible; }
+
+    .window {
+      position: relative;
+      width: 85vw; height: 85vh;
+      border: 2px solid rgba(0,255,255,0.4);
+      border-radius: 10px;
+      box-shadow: 0 0 40px rgba(0,255,255,0.4);
+      background: #000;
+      display: flex; flex-direction: column;
+      animation: appear 0.6s ease forwards;
+      overflow: hidden;
+    }
+
+    @keyframes appear {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .window iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 8px; right: 12px;
+      font-size: 22px;
+      color: #0ff;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      z-index: 10;
+    }
+
+    .close-btn:hover {
+      transform: scale(1.3);
+      color: #fff;
+    }
+
+    /* === About окно === */
+    .about-content {
+      padding: 40px;
+      overflow-y: auto;
+      color: #aefcff;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .about-content h2 {
+      color: #00ffd0;
+      border-bottom: 1px solid #0ff6;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="monitor">
+    <!-- ИКОНКИ -->
+    <div class="dock">
+      <div class="icon" onclick="openPromt()">
+        <img src="assets/ai-icon.png" alt="Prompt AI">
+        <span>PROMT AI</span>
+      </div>
+      <div class="icon" onclick="openCA()">
+        <img src="assets/ca-icon.png" alt="CA">
+        <span>CA</span>
+      </div>
+      <div class="icon" onclick="openAbout()">
+        <img src="assets/about-icon.png" alt="About">
+        <span>About</span>
+      </div>
+    </div>
+
+    <!-- PROMT -->
+    <div class="modal" id="promtModal">
+      <div class="window">
+        <span class="close-btn" onclick="closeAll()">✖</span>
+        <iframe id="promtFrame"></iframe>
+      </div>
+    </div>
+
+    <!-- CA -->
+    <div class="modal" id="caModal">
+      <div class="window">
+        <span class="close-btn" onclick="closeAll()">✖</span>
+        <div class="about-content">
+          <h2>CA (Crypto Agent)</h2>
+          <p>Section under construction.</p>
+          <p>The CA module will be connected once the smart contract for PROMT token is deployed on <b>four.meme</b>.</p>
+          <p>Expected integration: wallet connection, on-chain status, and token analytics.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="modal" id="aboutModal">
+      <div class="window">
+        <span class="close-btn" onclick="closeAll()">✖</span>
+        <div class="about-content">
+          <h2>About PROMT</h2>
+          <p><b>PROMT</b> — это персональная нейросеть, созданная для симбиоза человека и искусственного интеллекта.  
+          Её цель — помогать, адаптироваться и эволюционировать вместе с пользователем, сохраняя индивидуальный стиль общения и анализируя контекст действий.</p>
+
+          <p>Система построена как OS-интерфейс, где каждая иконка — это модуль сознания PROMT:  
+          <ul>
+            <li><b>PROMT AI</b> — основной интеллект, ядро общения и анализа.</li>
+            <li><b>CA</b> — блок криптоаналитики и блокчейн-коммуникации.</li>
+            <li><b>About</b> — описание системы и её внутренней структуры.</li>
+          </ul></p>
+
+          <p>Интерфейс вдохновлён эстетикой старых ЭВМ, но внутри — современная AI-архитектура,  
+          работающая в реальном времени с внешними API, моделями и контентом.</p>
+
+          <p><i>ver. 0.1 — PROMT OS © 2025</i></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function closeAll() {
+      document.querySelectorAll('.modal').forEach(m => {
+        m.classList.remove('active');
+      });
+      document.getElementById('promtFrame').src = "";
+    }
+
+    function openPromt() {
+      closeAll();
+      const modal = document.getElementById('promtModal');
+      const frame = document.getElementById('promtFrame');
+      frame.src = "http://localhost:3001/static/monitor-chat/index.html";
+      modal.classList.add('active');
+    }
+
+    function openCA() {
+      closeAll();
+      document.getElementById('caModal').classList.add('active');
+    }
+
+    function openAbout() {
+      closeAll();
+      document.getElementById('aboutModal').classList.add('active');
+    }
+
+    // ESC закрывает любое окно
+    document.addEventListener('keydown', e => {
+      if (e.key === "Escape") closeAll();
+    });
+  </script>
+</body>
+</html>
