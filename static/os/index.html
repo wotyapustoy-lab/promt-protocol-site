@@ -217,12 +217,12 @@
     document.getElementById('promtFrame').src = "";
   }
 
-  function openPromt() {
+    function openPromt() {
     closeAll();
     const modal = document.getElementById('promtModal');
     const frame = document.getElementById('promtFrame');
 
-    // ✅ Подключаем прод-чат из Vercel
+    // ✅ Подключаем прод-чат (Vercel)
     frame.src = "https://promt-protocol-chat.vercel.app/static/monitor-chat/index.html";
     modal.classList.add('active');
   }
@@ -240,22 +240,3 @@
   document.addEventListener('keydown', e => {
     if (e.key === "Escape") closeAll();
   });
-</script>
-
-
-    function openCA() {
-      closeAll();
-      document.getElementById('caModal').classList.add('active');
-    }
-
-    function openAbout() {
-      closeAll();
-      document.getElementById('aboutModal').classList.add('active');
-    }
-
-    document.addEventListener('keydown', e => {
-      if (e.key === "Escape") closeAll();
-    });
-  </script>
-</body>
-</html>
