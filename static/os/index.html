@@ -200,7 +200,8 @@
     </div>
   </div>
 
-  <script>
+    <script>
+    // 🔹 Закрывает все модальные окна
     function closeAll() {
       document.querySelectorAll('.modal').forEach(m => {
         m.classList.remove('active');
@@ -208,35 +209,33 @@
       document.getElementById('promtFrame').src = "";
     }
 
-    function openPromt() 
-    <script>
-  function closeAll() {
-    document.querySelectorAll('.modal').forEach(m => {
-      m.classList.remove('active');
-    });
-    document.getElementById('promtFrame').src = "";
-  }
-
+    // 🔹 Открывает PROMT AI (чат)
     function openPromt() {
-    closeAll();
-    const modal = document.getElementById('promtModal');
-    const frame = document.getElementById('promtFrame');
+      closeAll();
+      const modal = document.getElementById('promtModal');
+      const frame = document.getElementById('promtFrame');
 
-    // ✅ Подключаем прод-чат (Vercel)
-    frame.src = "https://promt-protocol-chat.vercel.app/static/monitor-chat/index.html";
-    modal.classList.add('active');
-  }
+      // ✅ Загружаем продовый чат из Vercel
+      frame.src = "https://promt-protocol-chat.vercel.app/static/monitor-chat/index.html";
+      modal.classList.add('active');
+    }
 
-  function openCA() {
-    closeAll();
-    document.getElementById('caModal').classList.add('active');
-  }
+    // 🔹 Открывает CA окно
+    function openCA() {
+      closeAll();
+      document.getElementById('caModal').classList.add('active');
+    }
 
-  function openAbout() {
-    closeAll();
-    document.getElementById('aboutModal').classList.add('active');
-  }
+    // 🔹 Открывает About окно
+    function openAbout() {
+      closeAll();
+      document.getElementById('aboutModal').classList.add('active');
+    }
 
-  document.addEventListener('keydown', e => {
-    if (e.key === "Escape") closeAll();
-  });
+    // 🔹 Закрытие по ESC
+    document.addEventListener('keydown', e => {
+      if (e.key === "Escape") closeAll();
+    });
+  </script>
+</body>
+</html>
