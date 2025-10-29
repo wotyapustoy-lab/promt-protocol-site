@@ -143,7 +143,10 @@ export default class MonitorScreen extends EventEmitter {
 
         // Create iframe
         const iframe = document.createElement('iframe')
-        iframe.src = '/os/index.html' // 👈 наша новая локальная сцена
+       
+        // ✅ Подключаем онлайн-чат вместо локальной сцены
+        iframe.src = window.PROMT_CHAT_URL || 'https://promt-protocol.onrender.com/static/monitor-chat/index.html';
+        
         iframe.style.border = 'none'
         iframe.allow = 'fullscreen'
 
