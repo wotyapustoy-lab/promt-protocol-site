@@ -208,13 +208,40 @@
       document.getElementById('promtFrame').src = "";
     }
 
-    function openPromt() {
-      closeAll();
-      const modal = document.getElementById('promtModal');
-      const frame = document.getElementById('promtFrame');
-      frame.src = "https://promt-protocol.onrender.com/static/monitor-chat/index.html";
-      modal.classList.add('active');
-    }
+    function openPromt() 
+    <script>
+  function closeAll() {
+    document.querySelectorAll('.modal').forEach(m => {
+      m.classList.remove('active');
+    });
+    document.getElementById('promtFrame').src = "";
+  }
+
+  function openPromt() {
+    closeAll();
+    const modal = document.getElementById('promtModal');
+    const frame = document.getElementById('promtFrame');
+
+    // ✅ Подключаем прод-чат из Vercel
+    frame.src = "https://promt-protocol-chat.vercel.app/static/monitor-chat/index.html";
+    modal.classList.add('active');
+  }
+
+  function openCA() {
+    closeAll();
+    document.getElementById('caModal').classList.add('active');
+  }
+
+  function openAbout() {
+    closeAll();
+    document.getElementById('aboutModal').classList.add('active');
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === "Escape") closeAll();
+  });
+</script>
+
 
     function openCA() {
       closeAll();
