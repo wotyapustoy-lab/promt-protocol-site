@@ -50,7 +50,7 @@ export default class MonitorScreen extends EventEmitter {
     this.shouldLeaveMonitor = false;
 
     // Create screen
-    this.initializeScreenEvents();
+    // this.createIframe(); // создаётся только при входе в чат
     this.createIframe();
     const maxOffset = this.createTextureLayers();
     this.createEnclosingPlanes(maxOffset);
