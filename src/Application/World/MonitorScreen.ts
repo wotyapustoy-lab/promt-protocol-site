@@ -15,6 +15,9 @@ const IFRAME_SIZE = {
   h: SCREEN_SIZE.h - IFRAME_PADDING,
 };
 
+// ВАЖНО: OS лежит в /static/os/, потому что CopyWebpackPlugin копирует папку "static" в public/static
+const OS_URL_PROD = '/static/os/index.html';
+
 export default class MonitorScreen extends EventEmitter {
   application: Application;
   scene: THREE.Scene;
@@ -33,7 +36,6 @@ export default class MonitorScreen extends EventEmitter {
   mouseClickInProgress: boolean;
   dimmingPlane: THREE.Mesh;
   videoTextures: { [key in string]: THREE.VideoTexture };
-  iframeCreated: boolean = false; // 🔹 новое свойство
 
   constructor() {
     super();
@@ -50,28 +52,13 @@ export default class MonitorScreen extends EventEmitter {
     this.mouseClickInProgress = false;
     this.shouldLeaveMonitor = false;
 
-    // 🎯 только создаём слои и экран, iframe — позже
+    // События курсора и кликов
     this.initializeScreenEvents();
+    // Экран монитора (CSS-плоскость + GL-слои)
+    this.createIframe();
     const maxOffset = this.createTextureLayers();
     this.createEnclosingPlanes(maxOffset);
     this.createPerspectiveDimmer(maxOffset);
-
-    // 🎯 слушаем событие входа в чат
-    this.camera.on('enterChat', () => {
-      if (!this.iframeCreated) {
-        this.createIframe();
-        this.iframeCreated = true;
-      }
-    });
-
-    // 🎯 слушаем событие выхода из чата
-    this.camera.on('leftChat', () => {
-      const existingIframe = document.getElementById('computer-screen');
-      if (existingIframe) {
-        existingIframe.remove();
-        this.iframeCreated = false;
-      }
-    });
   }
 
   initializeScreenEvents() {
@@ -92,19 +79,11 @@ export default class MonitorScreen extends EventEmitter {
           this.camera.trigger('enterMonitor');
         }
 
-        if (
-          !this.inComputer &&
-          this.prevInComputer &&
-          !this.mouseClickInProgress
-        ) {
+        if (!this.inComputer && this.prevInComputer && !this.mouseClickInProgress) {
           this.camera.trigger('leftMonitor');
         }
 
-        if (
-          !this.inComputer &&
-          this.mouseClickInProgress &&
-          this.prevInComputer
-        ) {
+        if (!this.inComputer && this.mouseClickInProgress && this.prevInComputer) {
           this.shouldLeaveMonitor = true;
         } else {
           this.shouldLeaveMonitor = false;
@@ -148,55 +127,61 @@ export default class MonitorScreen extends EventEmitter {
   }
 
   /**
-   * Creates the iframe for the computer screen
+   * Создаёт iframe экрана компьютера (внутри — твоя локальная OS-сцена с иконками AI/CA/About).
    */
   createIframe() {
-    // Create container
+    // Контейнер
     const container = document.createElement('div');
     container.style.width = this.screenSize.width + 'px';
     container.style.height = this.screenSize.height + 'px';
     container.style.opacity = '1';
     container.style.background = '#1d2e2f';
 
-    // Create iframe
+    // Iframe
     const iframe = document.createElement('iframe');
-    iframe.src = "https://promt-protocol.onrender.com/static/monitor-chat/index.html";
-    iframe.style.border = "none";
-    iframe.allow = "fullscreen";
 
+    // Продовый URL до OS (иконки и модальные окна)
+    let iframeSrc = OS_URL_PROD;
+
+    // Если есть ?dev — используем локальный дев-сервер
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has("dev")) {
-      iframe.src = "http://localhost:3000/";
+    if (urlParams.has('dev')) {
+      iframeSrc = 'http://localhost:3000/';
     }
 
+    iframe.src = iframeSrc;
+    iframe.style.border = 'none';
+    iframe.allow = 'fullscreen';
+
+    // Проброс событий из iframe наружу (для камеры и эффектов)
     iframe.onload = () => {
       if (iframe.contentWindow) {
         window.addEventListener('message', (event) => {
-          var evt = new CustomEvent(event.data.type, {
+          const evt = new CustomEvent(event.data.type, {
             bubbles: true,
             cancelable: false,
-          });
-          // @ts-ignore
+          }) as any;
+
           evt.inComputer = true;
+
           if (event.data.type === 'mousemove') {
-            var clRect = iframe.getBoundingClientRect();
+            const clRect = iframe.getBoundingClientRect();
             const { top, left, width, height } = clRect;
             const widthRatio = width / IFRAME_SIZE.w;
             const heightRatio = height / IFRAME_SIZE.h;
-            // @ts-ignore
+
             evt.clientX = Math.round(event.data.clientX * widthRatio + left);
-            // @ts-ignore
             evt.clientY = Math.round(event.data.clientY * heightRatio + top);
           } else if (event.data.type === 'keydown' || event.data.type === 'keyup') {
-            // @ts-ignore
             evt.key = event.data.key;
           }
+
           iframe.dispatchEvent(evt);
         });
       }
     };
 
-    // Атрибуты iframe
+    // Размеры/стили
     iframe.style.width = this.screenSize.width + 'px';
     iframe.style.height = this.screenSize.height + 'px';
     iframe.style.padding = IFRAME_PADDING + 'px';
@@ -207,10 +192,16 @@ export default class MonitorScreen extends EventEmitter {
     iframe.frameBorder = '0';
     iframe.title = 'PROMT Monitor';
 
+    // Вставить в контейнер
     container.appendChild(iframe);
+
+    // Создать CSS-плоскость для экрана
     this.createCssPlane(container);
   }
 
+  /**
+   * Создаёт CSS-плоскость и GL-плоскость (для правильной окклюзии)
+   */
   createCssPlane(element: HTMLElement) {
     const object = new CSS3DObject(element);
     object.position.copy(this.position);
@@ -223,11 +214,7 @@ export default class MonitorScreen extends EventEmitter {
     material.transparent = true;
     material.blending = THREE.NoBlending;
 
-    const geometry = new THREE.PlaneGeometry(
-      this.screenSize.width,
-      this.screenSize.height
-    );
-
+    const geometry = new THREE.PlaneGeometry(this.screenSize.width, this.screenSize.height);
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.copy(object.position);
     mesh.rotation.copy(object.rotation);
@@ -236,8 +223,12 @@ export default class MonitorScreen extends EventEmitter {
     this.scene.add(mesh);
   }
 
+  /**
+   * Текстурные слои (стекло, тени, видео-шум)
+   */
   createTextureLayers() {
     const textures = this.resources.items.texture;
+
     this.getVideoTextures('video-1');
     this.getVideoTextures('video-2');
 
@@ -270,9 +261,9 @@ export default class MonitorScreen extends EventEmitter {
     };
 
     let maxOffset = -1;
-    for (const [_, layer] of Object.entries(layers)) {
-      const offset = layer.offset * scaleFactor;
-      this.addTextureLayer(layer.texture, layer.blending, layer.opacity, offset);
+    for (const [, layer] of Object.entries(layers)) {
+      const offset = (layer as any).offset * scaleFactor;
+      this.addTextureLayer((layer as any).texture, (layer as any).blending, (layer as any).opacity, offset);
       if (offset > maxOffset) maxOffset = offset;
     }
     return maxOffset;
@@ -281,18 +272,15 @@ export default class MonitorScreen extends EventEmitter {
   getVideoTextures(videoId: string) {
     const video = document.getElementById(videoId);
     if (!video) {
-      setTimeout(() => this.getVideoTextures(videoId), 100);
+      setTimeout(() => {
+        this.getVideoTextures(videoId);
+      }, 100);
     } else {
       this.videoTextures[videoId] = new THREE.VideoTexture(video as HTMLVideoElement);
     }
   }
 
-  addTextureLayer(
-    texture: THREE.Texture,
-    blendingMode: THREE.Blending,
-    opacity: number,
-    offset: number
-  ) {
+  addTextureLayer(texture: THREE.Texture, blendingMode: THREE.Blending, opacity: number, offset: number) {
     const material = new THREE.MeshBasicMaterial({
       map: texture,
       blending: blendingMode,
@@ -301,17 +289,10 @@ export default class MonitorScreen extends EventEmitter {
       transparent: true,
     });
 
-    const geometry = new THREE.PlaneGeometry(
-      this.screenSize.width,
-      this.screenSize.height
-    );
-
+    const geometry = new THREE.PlaneGeometry(this.screenSize.width, this.screenSize.height);
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.copy(
-      this.offsetPosition(this.position, new THREE.Vector3(0, 0, offset))
-    );
+    mesh.position.copy(this.offsetPosition(this.position, new THREE.Vector3(0, 0, offset)));
     mesh.rotation.copy(this.rotation);
-
     this.scene.add(mesh);
   }
 
@@ -337,10 +318,10 @@ export default class MonitorScreen extends EventEmitter {
         position: this.offsetPosition(this.position, new THREE.Vector3(0, -this.screenSize.height / 2, maxOffset / 2)),
         rotation: new THREE.Euler(90 * THREE.MathUtils.DEG2RAD, 0, 0),
       },
-    };
+    } as const;
 
-    for (const [_, plane] of Object.entries(planes)) {
-      this.createEnclosingPlane(plane);
+    for (const [, plane] of Object.entries(planes)) {
+      this.createEnclosingPlane(plane as any);
     }
   }
 
@@ -349,6 +330,7 @@ export default class MonitorScreen extends EventEmitter {
       side: THREE.DoubleSide,
       color: 0x48493f,
     });
+
     const geometry = new THREE.PlaneGeometry(plane.size.x, plane.size.y);
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.copy(plane.position);
@@ -363,6 +345,7 @@ export default class MonitorScreen extends EventEmitter {
       transparent: true,
       blending: THREE.AdditiveBlending,
     });
+
     const plane = new THREE.PlaneGeometry(this.screenSize.width, this.screenSize.height);
     const mesh = new THREE.Mesh(plane, material);
     mesh.position.copy(this.offsetPosition(this.position, new THREE.Vector3(0, 0, maxOffset - 5)));
@@ -390,17 +373,21 @@ export default class MonitorScreen extends EventEmitter {
       const dimPos = this.dimmingPlane.position;
       const camPos = this.camera.instance.position;
       const distance = Math.sqrt(
-        (camPos.x - dimPos.x) ** 2 +
-        (camPos.y - dimPos.y) ** 2 +
-        (camPos.z - dimPos.z) ** 2
+        (camPos.x - dimPos.x) ** 2 + (camPos.y - dimPos.y) ** 2 + (camPos.z - dimPos.z) ** 2
       );
 
       const opacity = 1 / (distance / 10000);
       const DIM_FACTOR = 0.7;
 
       // @ts-ignore
-      this.dimmingPlane.material.opacity =
-        (1 - opacity) * DIM_FACTOR + (1 - dot) * DIM_FACTOR;
+      this.dimmingPlane.material.opacity = (1 - opacity) * DIM_FACTOR + (1 - dot) * DIM_FACTOR;
     }
   }
+}
+
+// Тип для createEnclosingPlane
+interface EnclosingPlane {
+  size: THREE.Vector2;
+  position: THREE.Vector3;
+  rotation: THREE.Euler;
 }
