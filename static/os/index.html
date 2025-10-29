@@ -151,15 +151,15 @@
   <div class="monitor">
     <div class="dock">
       <div class="icon" onclick="openPromt()">
-        <img src="assets/ai-icon.png" alt="Prompt AI">
+        <img src="./assets/ai-icon.png" alt="Prompt AI">
         <span>PROMT AI</span>
       </div>
       <div class="icon" onclick="openCA()">
-        <img src="assets/ca-icon.png" alt="CA">
+        <img src="./assets/ca-icon.png" alt="CA">
         <span>CA</span>
       </div>
       <div class="icon" onclick="openAbout()">
-        <img src="assets/about-icon.png" alt="About">
+        <img src="./assets/about-icon.png" alt="About">
         <span>About</span>
       </div>
     </div>
@@ -188,19 +188,12 @@
         <span class="close-btn" onclick="closeAll()">✖</span>
         <div class="about-content">
           <h2>About PROMT</h2>
-          <p><b>PROMT</b> — a personal neural network designed for symbiosis between human and artificial intelligence.  
-          Its goal is to assist, adapt, and evolve with the user, maintaining a unique communication style and analyzing contextual actions.</p>
-
-          <p>The system is structured like an OS interface, where each icon represents a module of PROMT’s consciousness:  
+          <p><b>PROMT</b> — a personal neural network designed for symbiosis between human and artificial intelligence.</p>
           <ul>
-            <li><b>PROMT AI</b> — the main intelligence, communication and analysis core.</li>
+            <li><b>PROMT AI</b> — the main intelligence core.</li>
             <li><b>CA</b> — crypto analytics and blockchain interaction module.</li>
             <li><b>About</b> — system description and internal architecture.</li>
-          </ul></p>
-
-          <p>The interface is inspired by the aesthetics of old computer systems, but inside lies a modern AI architecture  
-          operating in real time with external APIs, models, and content.</p>
-
+          </ul>
           <p><i>ver. 0.1 — PROMT OS © 2025</i></p>
         </div>
       </div>
@@ -219,7 +212,6 @@
       closeAll();
       const modal = document.getElementById('promtModal');
       const frame = document.getElementById('promtFrame');
-      // ✅ Updated to online Render chat
       frame.src = "https://promt-protocol.onrender.com/static/monitor-chat/index.html";
       modal.classList.add('active');
     }
