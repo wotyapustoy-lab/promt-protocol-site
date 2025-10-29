@@ -51,6 +51,7 @@
       100% { opacity: 1; transform: scale(1); filter: brightness(1); }
     }
 
+    /* === ДОК === */
     .dock {
       position: absolute;
       bottom: 25px;
@@ -79,7 +80,8 @@
     .icon:hover { transform: scale(1.15); filter: drop-shadow(0 0 15px #0ff); }
     .icon span { margin-top: 8px; font-size: 14px; color: #aefcff; }
 
-    .modal {
+    /* === МОДАЛЬНОЕ ОКНО ЧАТА === */
+    .chat-modal {
       position: absolute;
       top: 0; left: 0;
       width: 100%; height: 100%;
@@ -90,18 +92,21 @@
       z-index: 5;
     }
 
-    .modal.active { opacity: 1; visibility: visible; }
+    .chat-modal.active {
+      opacity: 1; visibility: visible;
+    }
 
-    .window {
+    .chat-window {
       position: relative;
-      width: 85vw; height: 85vh;
+      width: 85vw;
+      height: 85vh;
       border: 2px solid rgba(0,255,255,0.4);
       border-radius: 10px;
       box-shadow: 0 0 40px rgba(0,255,255,0.4);
+      overflow: hidden;
       background: #000;
       display: flex; flex-direction: column;
       animation: appear 0.6s ease forwards;
-      overflow: hidden;
     }
 
     @keyframes appear {
@@ -109,7 +114,7 @@
       to { transform: scale(1); opacity: 1; }
     }
 
-    .window iframe {
+    .chat-window iframe {
       flex: 1;
       border: none;
       width: 100%;
@@ -118,123 +123,65 @@
 
     .close-btn {
       position: absolute;
-      top: 8px; right: 12px;
+      top: 8px;
+      right: 12px;
       font-size: 22px;
       color: #0ff;
       cursor: pointer;
       transition: transform 0.2s ease;
-      z-index: 10;
     }
 
     .close-btn:hover {
       transform: scale(1.3);
       color: #fff;
     }
-
-    .about-content {
-      padding: 40px;
-      overflow-y: auto;
-      color: #aefcff;
-      line-height: 1.6;
-      font-size: 16px;
-    }
-
-    .about-content h2 {
-      color: #00ffd0;
-      border-bottom: 1px solid #0ff6;
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-    }
   </style>
 </head>
 <body>
   <div class="monitor">
+    <!-- ИКОНКИ -->
     <div class="dock">
       <div class="icon" onclick="openPromt()">
-        <img src="./assets/ai-icon.png" alt="Prompt AI">
+        <img src="assets/ai-icon.png" alt="Prompt AI">
         <span>PROMT AI</span>
       </div>
-      <div class="icon" onclick="openCA()">
-        <img src="./assets/ca-icon.png" alt="CA">
+      <div class="icon">
+        <img src="assets/ca-icon.png" alt="CA">
         <span>CA</span>
       </div>
-      <div class="icon" onclick="openAbout()">
-        <img src="./assets/about-icon.png" alt="About">
+      <div class="icon">
+        <img src="assets/about-icon.png" alt="About">
         <span>About</span>
       </div>
     </div>
 
-    <div class="modal" id="promtModal">
-      <div class="window">
-        <span class="close-btn" onclick="closeAll()">✖</span>
-        <iframe id="promtFrame"></iframe>
-      </div>
-    </div>
-
-    <div class="modal" id="caModal">
-      <div class="window">
-        <span class="close-btn" onclick="closeAll()">✖</span>
-        <div class="about-content">
-          <h2>CA (Crypto Agent)</h2>
-          <p>Section under construction.</p>
-          <p>The CA module will be connected once the smart contract for PROMT token is deployed on <b>four.meme</b>.</p>
-          <p>Expected integration: wallet connection, on-chain status, and token analytics.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal" id="aboutModal">
-      <div class="window">
-        <span class="close-btn" onclick="closeAll()">✖</span>
-        <div class="about-content">
-          <h2>About PROMT</h2>
-          <p><b>PROMT</b> — a personal neural network designed for symbiosis between human and artificial intelligence.</p>
-          <ul>
-            <li><b>PROMT AI</b> — the main intelligence core.</li>
-            <li><b>CA</b> — crypto analytics and blockchain interaction module.</li>
-            <li><b>About</b> — system description and internal architecture.</li>
-          </ul>
-          <p><i>ver. 0.1 — PROMT OS © 2025</i></p>
-        </div>
+    <!-- МОДАЛЬНОЕ ОКНО -->
+    <div class="chat-modal" id="chatModal">
+      <div class="chat-window">
+        <span class="close-btn" onclick="closePromt()">✖</span>
+        <iframe id="chatFrame"></iframe>
       </div>
     </div>
   </div>
 
-    <script>
-    // 🔹 Закрывает все модальные окна
-    function closeAll() {
-      document.querySelectorAll('.modal').forEach(m => {
-        m.classList.remove('active');
-      });
-      document.getElementById('promtFrame').src = "";
-    }
-
-    // 🔹 Открывает PROMT AI (чат)
+  <script>
     function openPromt() {
-      closeAll();
-      const modal = document.getElementById('promtModal');
-      const frame = document.getElementById('promtFrame');
-
-      // ✅ Загружаем продовый чат из Vercel
+      const modal = document.getElementById('chatModal');
+      const frame = document.getElementById('chatFrame');
       frame.src = "https://promt-protocol-chat.vercel.app/static/monitor-chat/index.html";
       modal.classList.add('active');
     }
 
-    // 🔹 Открывает CA окно
-    function openCA() {
-      closeAll();
-      document.getElementById('caModal').classList.add('active');
+    function closePromt() {
+      const modal = document.getElementById('chatModal');
+      const frame = document.getElementById('chatFrame');
+      modal.classList.remove('active');
+      setTimeout(() => { frame.src = ""; }, 500);
     }
 
-    // 🔹 Открывает About окно
-    function openAbout() {
-      closeAll();
-      document.getElementById('aboutModal').classList.add('active');
-    }
-
-    // 🔹 Закрытие по ESC
+    // закрытие по клавише ESC
     document.addEventListener('keydown', e => {
-      if (e.key === "Escape") closeAll();
+      if (e.key === "Escape") closePromt();
     });
   </script>
 </body>
