@@ -51,7 +51,6 @@
       100% { opacity: 1; transform: scale(1); filter: brightness(1); }
     }
 
-    /* === ДОК === */
     .dock {
       position: absolute;
       bottom: 25px;
@@ -80,7 +79,6 @@
     .icon:hover { transform: scale(1.15); filter: drop-shadow(0 0 15px #0ff); }
     .icon span { margin-top: 8px; font-size: 14px; color: #aefcff; }
 
-    /* === ОБЩИЕ МОДАЛЬНЫЕ ОКНА === */
     .modal {
       position: absolute;
       top: 0; left: 0;
@@ -133,7 +131,6 @@
       color: #fff;
     }
 
-    /* === About окно === */
     .about-content {
       padding: 40px;
       overflow-y: auto;
@@ -152,7 +149,6 @@
 </head>
 <body>
   <div class="monitor">
-    <!-- ИКОНКИ -->
     <div class="dock">
       <div class="icon" onclick="openPromt()">
         <img src="assets/ai-icon.png" alt="Prompt AI">
@@ -168,7 +164,6 @@
       </div>
     </div>
 
-    <!-- PROMT -->
     <div class="modal" id="promtModal">
       <div class="window">
         <span class="close-btn" onclick="closeAll()">✖</span>
@@ -176,7 +171,6 @@
       </div>
     </div>
 
-    <!-- CA -->
     <div class="modal" id="caModal">
       <div class="window">
         <span class="close-btn" onclick="closeAll()">✖</span>
@@ -189,24 +183,23 @@
       </div>
     </div>
 
-    <!-- ABOUT -->
     <div class="modal" id="aboutModal">
       <div class="window">
         <span class="close-btn" onclick="closeAll()">✖</span>
         <div class="about-content">
           <h2>About PROMT</h2>
-          <p><b>PROMT</b> — это персональная нейросеть, созданная для симбиоза человека и искусственного интеллекта.  
-          Её цель — помогать, адаптироваться и эволюционировать вместе с пользователем, сохраняя индивидуальный стиль общения и анализируя контекст действий.</p>
+          <p><b>PROMT</b> — a personal neural network designed for symbiosis between human and artificial intelligence.  
+          Its goal is to assist, adapt, and evolve with the user, maintaining a unique communication style and analyzing contextual actions.</p>
 
-          <p>Система построена как OS-интерфейс, где каждая иконка — это модуль сознания PROMT:  
+          <p>The system is structured like an OS interface, where each icon represents a module of PROMT’s consciousness:  
           <ul>
-            <li><b>PROMT AI</b> — основной интеллект, ядро общения и анализа.</li>
-            <li><b>CA</b> — блок криптоаналитики и блокчейн-коммуникации.</li>
-            <li><b>About</b> — описание системы и её внутренней структуры.</li>
+            <li><b>PROMT AI</b> — the main intelligence, communication and analysis core.</li>
+            <li><b>CA</b> — crypto analytics and blockchain interaction module.</li>
+            <li><b>About</b> — system description and internal architecture.</li>
           </ul></p>
 
-          <p>Интерфейс вдохновлён эстетикой старых ЭВМ, но внутри — современная AI-архитектура,  
-          работающая в реальном времени с внешними API, моделями и контентом.</p>
+          <p>The interface is inspired by the aesthetics of old computer systems, but inside lies a modern AI architecture  
+          operating in real time with external APIs, models, and content.</p>
 
           <p><i>ver. 0.1 — PROMT OS © 2025</i></p>
         </div>
@@ -226,7 +219,8 @@
       closeAll();
       const modal = document.getElementById('promtModal');
       const frame = document.getElementById('promtFrame');
-      frame.src = "http://localhost:3001/static/monitor-chat/index.html";
+      // ✅ Updated to online Render chat
+      frame.src = "https://promt-protocol.onrender.com/static/monitor-chat/index.html";
       modal.classList.add('active');
     }
 
@@ -240,7 +234,6 @@
       document.getElementById('aboutModal').classList.add('active');
     }
 
-    // ESC закрывает любое окно
     document.addEventListener('keydown', e => {
       if (e.key === "Escape") closeAll();
     });
