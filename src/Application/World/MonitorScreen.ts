@@ -191,7 +191,7 @@ export default class MonitorScreen extends EventEmitter {
 
         // Set iframe attributes
         // PROD
-        iframe.src = '/os/index.html';
+        
         /**
          * Use dev server is query params are present
          *
