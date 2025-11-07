@@ -51,6 +51,7 @@
       100% { opacity: 1; transform: scale(1); filter: brightness(1); }
     }
 
+    /* === док внизу === */
     .dock {
       position: absolute;
       bottom: 25px;
@@ -79,6 +80,7 @@
     .icon:hover { transform: scale(1.15); filter: drop-shadow(0 0 15px #0ff); }
     .icon span { margin-top: 8px; font-size: 14px; color: #aefcff; }
 
+    /* === общие модалки === */
     .modal {
       position: absolute;
       top: 0; left: 0;
@@ -139,31 +141,31 @@
       margin-bottom: 20px;
     }
 
-    /* === PROMT X402 overlay === */
+    /* === PROMT X402 (внутри модалки) === */
     #boot-screen, #app-x402 {
-      position: fixed;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
+      width: 100%;
+      text-align: center;
       color: #00ffcc;
       font-family: 'Share Tech Mono', monospace;
-      text-align: center;
-      background: rgba(0, 0, 0, 0.85);
-      border: 1px solid #00ffcc;
-      border-radius: 12px;
-      padding: 40px 60px;
-      box-shadow: 0 0 20px #00ffcc55;
-      z-index: 100;
     }
-    .hidden { display: none; }
-    .logo-circle {
+    #boot-screen .logo-circle {
       border: 2px solid #00ffcc;
       border-radius: 50%;
-      width: 100px; height: 100px;
+      width: 90px; height: 90px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 32px;
+      font-size: 30px;
       margin: 0 auto 20px;
+      box-shadow: 0 0 15px #00ffcc55;
     }
-    button {
+    #walletPanel p a {
+      color: #00ffcc;
+      text-decoration: none;
+    }
+    #walletPanel p a:hover {
+      text-decoration: underline;
+    }
+    /* чтобы кнопки X402 не сломали стили глобально — сузил селектор */
+    #app-x402 button, #boot-screen button {
       border: 1px solid #00ffcc;
       background: transparent;
       color: #00ffcc;
@@ -171,12 +173,18 @@
       cursor: pointer;
       transition: 0.3s;
     }
-    button:hover { background: #00ffcc; color: #000; }
+    #app-x402 button:hover, #boot-screen button:hover {
+      background: #00ffcc;
+      color: #000;
+      box-shadow: 0 0 10px #00ffcc99;
+    }
+    .hidden { display: none; }
   </style>
 </head>
 
 <body>
   <div class="monitor">
+    <!-- док -->
     <div class="dock">
       <div class="icon" onclick="openPromt()">
         <img src="assets/ai-icon.png" alt="Prompt AI">
@@ -186,12 +194,18 @@
         <img src="assets/ca-icon.png" alt="CA">
         <span>CA</span>
       </div>
+      <!-- новая иконка X402 -->
+      <div class="icon" onclick="openX402()">
+        <img src="assets/x402-icon.png" alt="X402">
+        <span>X402</span>
+      </div>
       <div class="icon" onclick="openAbout()">
         <img src="assets/about-icon.png" alt="About">
         <span>About</span>
       </div>
     </div>
 
+    <!-- PROMT -->
     <div class="modal" id="promtModal">
       <div class="window">
         <span class="close-btn" onclick="closeAll()">✖</span>
@@ -199,6 +213,7 @@
       </div>
     </div>
 
+    <!-- CA -->
     <div class="modal" id="caModal">
       <div class="window">
         <span class="close-btn" onclick="closeAll()">✖</span>
@@ -211,6 +226,7 @@
       </div>
     </div>
 
+    <!-- ABOUT -->
     <div class="modal" id="aboutModal">
       <div class="window">
         <span class="close-btn" onclick="closeAll()">✖</span>
@@ -226,33 +242,43 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- === PROMT X402 OVERLAY === -->
-  <div id="boot-screen" class="active">
-    <div class="logo-circle">>_</div>
-    <div class="boot-text">>_ PROMT X402 initializing...</div>
-  </div>
+    <!-- X402 -->
+    <div class="modal" id="x402Modal">
+      <div class="window" style="max-width:520px; height:auto; min-height:420px; align-items:center; padding:30px;">
+        <span class="close-btn" onclick="closeAll()">✖</span>
 
-  <div id="app-x402" class="hidden">
-    <h1>>_ PROMT X402</h1>
-    <p id="status">>_ awaiting Phantom signal...</p>
-    <button id="connectBtn">CONNECT WALLET</button>
-    <div id="walletPanel" class="hidden">
-      <p id="walletAddr"></p>
-      <p id="walletBalance"></p>
-      <p id="syncState"></p>
-      <p>>_ join the neural relay → 
-        <a href="https://t.me/promtchatconsole" target="_blank">t.me/promtchatconsole</a>
-      </p>
+        <!-- это твой же интерфейс, но теперь внутри модалки -->
+        <div id="boot-screen" class="active">
+          <div class="logo-circle">>_</div>
+          <div class="boot-text">>_ PROMT X402 initializing...</div>
+        </div>
+
+        <div id="app-x402" class="hidden">
+          <h1>>_ PROMT X402</h1>
+          <p id="status">>_ awaiting Phantom signal...</p>
+          <button id="connectBtn">CONNECT WALLET</button>
+          <div id="walletPanel" class="hidden">
+            <p id="walletAddr"></p>
+            <p id="walletBalance"></p>
+            <p id="syncState"></p>
+            <p>>_ join the neural relay →
+              <a href="https://t.me/promtchatconsole" target="_blank">t.me/promtchatconsole</a>
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+
+  </div><!-- /.monitor -->
 
   <script>
     function closeAll() {
       document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-      document.getElementById('promtFrame').src = "";
+      const f = document.getElementById('promtFrame');
+      if (f) f.src = "";
     }
+
     function openPromt() {
       closeAll();
       const modal = document.getElementById('promtModal');
@@ -260,11 +286,30 @@
       frame.src = "https://promt-protocol-chat.vercel.app/static/monitor-chat/index.html";
       modal.classList.add('active');
     }
-    function openCA() { closeAll(); document.getElementById('caModal').classList.add('active'); }
-    function openAbout() { closeAll(); document.getElementById('aboutModal').classList.add('active'); }
-    document.addEventListener('keydown', e => { if (e.key === "Escape") closeAll(); });
+
+    function openCA() {
+      closeAll();
+      document.getElementById('caModal').classList.add('active');
+    }
+
+    function openAbout() {
+      closeAll();
+      document.getElementById('aboutModal').classList.add('active');
+    }
+
+    // новая функция для X402
+    function openX402() {
+      closeAll();
+      document.getElementById('x402Modal').classList.add('active');
+    }
+
+    // ESC закрывает любое окно
+    document.addEventListener('keydown', e => {
+      if (e.key === "Escape") closeAll();
+    });
   </script>
 
+  <!-- твой уже существующий x402.js -->
   <script src="./assets/x402.js"></script>
 </body>
 </html>
