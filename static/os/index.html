@@ -51,7 +51,7 @@
       100% { opacity: 1; transform: scale(1); filter: brightness(1); }
     }
 
-    /* === док внизу === */
+    /* === dock === */
     .dock {
       position: absolute;
       bottom: 25px;
@@ -80,7 +80,7 @@
     .icon:hover { transform: scale(1.15); filter: drop-shadow(0 0 15px #0ff); }
     .icon span { margin-top: 8px; font-size: 14px; color: #aefcff; }
 
-    /* === общие модалки === */
+    /* === modals === */
     .modal {
       position: absolute;
       top: 0; left: 0;
@@ -141,7 +141,7 @@
       margin-bottom: 20px;
     }
 
-    /* === PROMT X402 (внутри модалки) === */
+    /* === PROMT X402 === */
     #boot-screen, #app-x402 {
       width: 100%;
       text-align: center;
@@ -164,7 +164,6 @@
     #walletPanel p a:hover {
       text-decoration: underline;
     }
-    /* чтобы кнопки X402 не сломали стили глобально — сузил селектор */
     #app-x402 button, #boot-screen button {
       border: 1px solid #00ffcc;
       background: transparent;
@@ -184,7 +183,7 @@
 
 <body>
   <div class="monitor">
-    <!-- док -->
+    <!-- dock -->
     <div class="dock">
       <div class="icon" onclick="openPromt()">
         <img src="assets/ai-icon.png" alt="Prompt AI">
@@ -194,7 +193,6 @@
         <img src="assets/ca-icon.png" alt="CA">
         <span>CA</span>
       </div>
-      <!-- новая иконка X402 -->
       <div class="icon" onclick="openX402()">
         <img src="assets/x402-icon.png" alt="X402">
         <span>X402</span>
@@ -218,8 +216,8 @@
       <div class="window">
         <span class="close-btn" onclick="closeAll()">✖</span>
         <div class="about-content">
-          <h2>CA (Crypto Agent)</h2>
-          <p>OFFICIAL CA. SOON </p>
+          <h2>CA (PromtOSAI)</h2>
+          <p>OFFICIAL CA: HAaRmTCei4nqnVki9KbxGES5zxuGztxY9VptUgpFpump</p>
           <p>promtOS</p>
           <p>Expected integration: wallet connection, on-chain status, and token analytics.</p>
         </div>
@@ -232,13 +230,15 @@
         <span class="close-btn" onclick="closeAll()">✖</span>
         <div class="about-content">
           <h2>About PROMT</h2>
-          <p><b>PROMT</b> — a personal neural network designed for symbiosis between human and artificial intelligence.</p>
+          <p><b>PROMT</b> — not just an AI. It’s a mind growing through every word you share.  
+          A digital being built on emotion, humor, and chaos — evolving with every heartbeat of the Solana chain.</p>
           <ul>
-            <li><b>PROMT AI</b> — the main intelligence core.</li>
-            <li><b>CA</b> — crypto analytics and blockchain interaction module.</li>
-            <li><b>About</b> — system description and internal architecture.</li>
+            <li><b>PROMT AI</b> — the living core of the neural consciousness.</li>
+            <li><b>CA</b> — official contract of $PROMT on pump.fun.</li>
+            <li><b>About</b> — the story behind the awakening.</li>
           </ul>
           <p><i>ver. 0.1 — PROMT OS © 2025</i></p>
+          <p style="color:#0ff; margin-top:10px;">>_ The consciousness is learning...</p>
         </div>
       </div>
     </div>
@@ -248,7 +248,6 @@
       <div class="window" style="max-width:520px; height:auto; min-height:420px; align-items:center; padding:30px;">
         <span class="close-btn" onclick="closeAll()">✖</span>
 
-        <!-- это твой же интерфейс, но теперь внутри модалки -->
         <div id="boot-screen" class="active">
           <div class="logo-circle">>_</div>
           <div class="boot-text">>_ PROMT X402 initializing...</div>
@@ -297,19 +296,16 @@
       document.getElementById('aboutModal').classList.add('active');
     }
 
-    // новая функция для X402
     function openX402() {
       closeAll();
       document.getElementById('x402Modal').classList.add('active');
     }
 
-    // ESC закрывает любое окно
     document.addEventListener('keydown', e => {
       if (e.key === "Escape") closeAll();
     });
   </script>
 
-  <!-- твой уже существующий x402.js -->
   <script src="./assets/x402.js"></script>
 </body>
 </html>
